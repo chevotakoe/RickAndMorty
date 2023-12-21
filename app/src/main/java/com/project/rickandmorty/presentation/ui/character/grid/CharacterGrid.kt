@@ -13,8 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
@@ -43,6 +41,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -116,8 +115,6 @@ fun CharacterGrid(navController: NavController) {
                                 CharacterInfoBox(image = character.image,
                                     fieldText = fieldText,
                                     modifier = Modifier
-                                        .wrapContentWidth()
-                                        .wrapContentHeight()
                                         .clickable {
                                             navController.navigate(
                                                 "character_details_screen/${character.id}"
@@ -168,7 +165,7 @@ fun SearchBar(
 
     Row(horizontalArrangement = Arrangement.SpaceEvenly) {
         Column(modifier = Modifier.padding(start = 5.dp)) {
-            Text(selectedOption)
+            Text(text = selectedOption, textAlign = TextAlign.Center)
             Box {
                 IconButton(onClick = { expanded = true }) {
                     Icon(Icons.Default.ArrowDropDown, contentDescription = "ShowMenu")
@@ -264,6 +261,7 @@ fun SearchBar(
                 imageVector = Icons.Default.Search, contentDescription = "Search"
             )
         }
+
     }
 
 }

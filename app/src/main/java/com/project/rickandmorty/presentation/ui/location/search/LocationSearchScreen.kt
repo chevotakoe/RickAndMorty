@@ -47,14 +47,16 @@ fun LocationSearchScreen(
         value = viewModel.getFilteredLocations(name, type, dimension)
     }.value
 
-    val locationsEntityState = produceState<List<LocationEntity>?>(initialValue = null) {
-        viewModel.getLocationSearchDb(name, type, dimension).data?.collect {
-            value = it
-        }
-    }.value
-
     val locations: List<Location>? = if (locationsState is Resource.Error) {
-        locationsEntityState?.map { it.toLocation() }
+        produceState<List<LocationEntity>?>(initialValue = null) {
+            viewModel.getLocationSearchDb(
+                name = name ?: "",
+                type = type ?: "",
+                dimension = dimension ?: ""
+            ).data?.collect {
+                value = it
+            }
+        }.value?.map { it.toLocation() }
     } else {
         locationsState.data
     }
@@ -66,7 +68,7 @@ fun LocationSearchScreen(
             navigationIcon = {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
-                    contentDescription = null,
+                    contentDescription = "Go Back",
                     modifier = Modifier
                         .size(24.dp, 24.dp)
                         .clickable {

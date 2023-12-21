@@ -9,8 +9,8 @@ class GetFilteredEpisodesDbUseCase(
     private val repository: RMRepository
 ) {
     fun execute(
-        name: String? = null,
-        episode: String? = null
+        name: String = "",
+        episode: String = ""
     ): Resource<Flow<List<EpisodeEntity>>> {
         return repository.getEpisodeSearchDb(
             name = name, episode = episode

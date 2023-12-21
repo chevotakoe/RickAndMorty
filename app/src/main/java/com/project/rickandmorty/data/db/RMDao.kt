@@ -34,18 +34,18 @@ interface RMDao {
     fun characterPagingSource(): PagingSource<Int, CharacterEntity>
 
     @Query(
-        "SELECT * FROM characterentity WHERE (:name IS NULL OR name LIKE '%' || :name || '%')" +
-                "AND (:status IS NULL OR status = :status)" +
-                "AND (:species IS NULL OR species = :species)" +
-                "AND (:type IS NULL OR type = :type)" +
-                "AND (:gender IS NULL OR gender = :gender)"
+        "SELECT * FROM characterentity WHERE (:name IS '' OR name LIKE '%' || :name || '%')" +
+                "AND (:type IS '' OR type = :type)" +
+                "AND (:status IS '' OR status = :status)" +
+                "AND (:species IS '' OR species = :species)" +
+                "AND (:gender IS '' OR gender = :gender)"
     )
     fun getCharactersBySearch(
-        name: String? = null,
-        status: String? = null,
-        species: String? = null,
-        type: String? = null,
-        gender: String? = null
+        name: String,
+        status: String,
+        species: String,
+        type: String,
+        gender: String
     ): Flow<List<CharacterEntity>>
 
     @Query("SELECT * FROM characterentity WHERE id = :characterId")
@@ -55,14 +55,14 @@ interface RMDao {
     fun locationPagingSource(): PagingSource<Int, LocationEntity>
 
     @Query(
-        "SELECT * FROM locationentity WHERE (:name IS NULL OR name LIKE '%' || :name || '%')" +
-                "AND (:type IS NULL OR type = :type)" +
-                "AND (:dimension IS NULL OR dimension LIKE '%' || :dimension || '%')"
+        "SELECT * FROM locationentity WHERE (:name IS '' OR name LIKE ('%' || :name || '%'))" +
+                "AND (:type IS '' OR type = :type)" +
+                "AND (:dimension IS '' OR dimension LIKE ('%' || :dimension || '%'))"
     )
     fun getLocationsBySearch(
-        name: String? = null,
-        type: String? = null,
-        dimension: String? = null
+        name: String,
+        type: String,
+        dimension: String
     ): Flow<List<LocationEntity>>
 
     @Query("SELECT * FROM locationentity WHERE id = :locationId")
@@ -72,12 +72,12 @@ interface RMDao {
     fun episodePagingSource(): PagingSource<Int, EpisodeEntity>
 
     @Query(
-        "SELECT * FROM episodeentity WHERE (:name IS NULL OR name LIKE '%' || :name || '%')" +
-                "AND (:episode IS NULL OR episode LIKE '%' || :episode || '%')"
+        "SELECT * FROM episodeentity WHERE (:name IS '' OR name LIKE '%' || :name || '%')" +
+                "AND (:episode IS '' OR episode LIKE '%' || :episode || '%')"
     )
     fun getEpisodesBySearch(
-        name: String? = null,
-        episode: String? = null
+        name: String,
+        episode: String
     ): Flow<List<EpisodeEntity>>
 
     @Query("SELECT * FROM episodeentity WHERE id = :episodeId")

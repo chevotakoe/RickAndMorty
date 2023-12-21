@@ -4,11 +4,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.icons.Icons
@@ -59,32 +57,30 @@ fun CharacterSearchScreen(
             )
         }.value
 
-    val charactersEntityState = produceState<List<CharacterEntity>?>(initialValue = null) {
-        viewModel.getCharacterSearchDb(
-            name = name,
-            gender = gender,
-            status = status,
-            species = species,
-            type = type
-        ).data?.collect {
-            value = it
-        }
-    }.value
-
     val characters: List<Character>? = if (charactersState is Resource.Error) {
-        charactersEntityState?.map { it.toCharacter() }
+        produceState<List<CharacterEntity>?>(initialValue = null) {
+            viewModel.getCharacterSearchDb(
+                name = name ?: "",
+                gender = gender ?: "",
+                status = status ?: "",
+                species = species ?: "",
+                type = type ?: ""
+            ).data?.collect {
+                value = it
+            }
+        }.value?.map { it.toCharacter() }
     } else {
         charactersState.data
     }
 
     Scaffold(topBar = {
         CenterAlignedTopAppBar(
-            modifier = Modifier.padding(),
+            modifier = Modifier,
             title = {},
             navigationIcon = {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
-                    contentDescription = null,
+                    contentDescription = "Go Back",
                     modifier = Modifier
                         .size(24.dp, 24.dp)
                         .clickable {
@@ -117,8 +113,6 @@ fun CharacterSearchScreen(
                             CharacterInfoBox(image = character.image,
                                 fieldText = fieldText,
                                 modifier = Modifier
-                                    .wrapContentWidth()
-                                    .wrapContentHeight()
                                     .clickable {
                                         navController.navigate(
                                             "character_details_screen/${character.id}"
@@ -128,10 +122,9 @@ fun CharacterSearchScreen(
 
                     }
                 } else {
-
                     item {
                         Box(
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier.wrapContentSize(),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(

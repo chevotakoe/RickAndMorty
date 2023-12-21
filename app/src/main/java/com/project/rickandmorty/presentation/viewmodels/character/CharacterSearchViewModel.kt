@@ -35,14 +35,20 @@ class CharacterSearchViewModel @Inject constructor(
     }
 
     fun getCharacterSearchDb(
-        name: String? = null,
-        species: String? = null,
-        status: String? = null,
-        gender: String? = null,
-        type: String? = null
+        name: String = "",
+        species: String = "",
+        status: String = "",
+        gender: String = "",
+        type: String = ""
     ): Resource<Flow<List<CharacterEntity>>> {
         val getFilteredCharactersDbUseCase = GetFilteredCharactersDbUseCase(repository)
-        return getFilteredCharactersDbUseCase.execute(name, species, status, gender, type)
+        return getFilteredCharactersDbUseCase.execute(
+            name = name,
+            species = species,
+            status = status,
+            gender = gender,
+            type = type
+        )
     }
 
 }

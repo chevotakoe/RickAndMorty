@@ -9,11 +9,11 @@ class GetFilteredCharactersDbUseCase(
     private val repository: RMRepository
 ) {
     fun execute(
-        name: String? = null,
-        species: String? = null,
-        status: String? = null,
-        gender: String? = null,
-        type: String? = null
+        name: String = "",
+        species: String = "",
+        status: String = "",
+        gender: String = "",
+        type: String = ""
     ): Resource<Flow<List<CharacterEntity>>> {
         return repository.getCharacterSearchDb(
             name = name,

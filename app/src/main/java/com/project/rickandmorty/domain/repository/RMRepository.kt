@@ -42,21 +42,22 @@ interface RMRepository {
     fun getLocationEntityDb(locationId: Int): Resource<Flow<LocationEntity>>
 
     fun getCharacterSearchDb(
-        name: String? = null,
-        status: String? = null,
-        gender: String? = null,
-        type: String? = null,
-        species: String? = null
+        name: String,
+        status: String,
+        gender: String,
+        type: String,
+        species: String
     ): Resource<Flow<List<CharacterEntity>>>
 
     fun getLocationSearchDb(
-        name: String? = null,
-        dimension: String? = null,
-        type: String? = null
+        name: String,
+        dimension: String,
+        type: String
     ): Resource<Flow<List<LocationEntity>>>
 
     fun getEpisodeSearchDb(
-        name: String? = null,
-        episode: String? = null
+        name: String,
+        episode: String
     ): Resource<Flow<List<EpisodeEntity>>>
+
 }

@@ -4,10 +4,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.icons.Icons
@@ -43,17 +43,15 @@ fun EpisodeSearchScreen(
     val viewModel = hiltViewModel<EpisodeSearchViewModel>()
 
     val episodesState = produceState<Resource<List<Episode>>>(initialValue = Resource.Loading()) {
-        value = viewModel.getFilteredEpisodes(name, episode)
-    }.value
-
-    val episodesEntityState = produceState<List<EpisodeEntity>?>(initialValue = null) {
-        viewModel.getEpisodeSearchDb(name, episode).data?.collect {
-            value = it
-        }
+        value = viewModel.getFilteredEpisodes(name = name, episode = episode)
     }.value
 
     val episodes: List<Episode>? = if (episodesState is Resource.Error) {
-        episodesEntityState?.map { it.toEpisode() }
+        produceState<List<EpisodeEntity>?>(initialValue = null) {
+            viewModel.getEpisodeSearchDb(name = name ?: "", episode = episode ?: "").data?.collect {
+                value = it
+            }
+        }.value?.map { it.toEpisode() }
     } else {
         episodesState.data
     }
@@ -108,7 +106,7 @@ fun EpisodeSearchScreen(
 
                     item {
                         Box(
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier.wrapContentSize(),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(

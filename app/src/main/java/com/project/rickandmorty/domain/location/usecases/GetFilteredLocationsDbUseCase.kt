@@ -9,9 +9,9 @@ class GetFilteredLocationsDbUseCase(
     private val repository: RMRepository
 ) {
     fun execute(
-        name: String? = null,
-        type: String? = null,
-        dimension: String? = null
+        name: String = "",
+        type: String = "",
+        dimension: String = ""
     ): Resource<Flow<List<LocationEntity>>> {
         return repository.getLocationSearchDb(
             name = name, dimension = dimension, type = type

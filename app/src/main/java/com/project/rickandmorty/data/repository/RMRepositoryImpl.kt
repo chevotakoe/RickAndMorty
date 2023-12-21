@@ -116,11 +116,11 @@ class RMRepositoryImpl @Inject constructor(
     }
 
     override fun getCharacterSearchDb(
-        name: String?,
-        status: String?,
-        gender: String?,
-        type: String?,
-        species: String?
+        name: String,
+        status: String,
+        gender: String,
+        type: String,
+        species: String
     ): Resource<Flow<List<CharacterEntity>>> {
         val response = try {
             db.dao.getCharactersBySearch(
@@ -137,9 +137,9 @@ class RMRepositoryImpl @Inject constructor(
     }
 
     override fun getLocationSearchDb(
-        name: String?,
-        dimension: String?,
-        type: String?
+        name: String,
+        dimension: String,
+        type: String
     ): Resource<Flow<List<LocationEntity>>> {
         val response = try {
             db.dao.getLocationsBySearch(name = name, dimension = dimension, type = type)
@@ -150,8 +150,8 @@ class RMRepositoryImpl @Inject constructor(
     }
 
     override fun getEpisodeSearchDb(
-        name: String?,
-        episode: String?
+        name: String,
+        episode: String
     ): Resource<Flow<List<EpisodeEntity>>> {
         val response = try {
             db.dao.getEpisodesBySearch(name = name, episode = episode)

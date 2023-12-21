@@ -23,10 +23,10 @@ class EpisodeSearchViewModel @Inject constructor(
     }
 
     fun getEpisodeSearchDb(
-        name: String? = null,
-        episode: String? = null
+        name: String = "",
+        episode: String = ""
     ): Resource<Flow<List<EpisodeEntity>>> {
-        val getFilteredCharactersDbUseCase = GetFilteredEpisodesDbUseCase(repository)
-        return getFilteredCharactersDbUseCase.execute(name = name, episode = episode)
+        val getFilteredEpisodesDbUseCase = GetFilteredEpisodesDbUseCase(repository)
+        return getFilteredEpisodesDbUseCase.execute(name = name, episode = episode)
     }
 }

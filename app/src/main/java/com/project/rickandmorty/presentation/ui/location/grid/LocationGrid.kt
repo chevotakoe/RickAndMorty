@@ -43,6 +43,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -86,49 +87,45 @@ fun LocationGrid(navController: NavController) {
                     modifier = Modifier.align(Alignment.Center)
                 )
             }
+        } else if (locations.itemCount == 0) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.White)
+            ) {
+                Text(text = "No items found", textAlign = TextAlign.Center)
+            }
         } else {
             LazyVerticalGrid(columns = GridCells.Fixed(2),
                 verticalArrangement = Arrangement.spacedBy(space = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(space = 16.dp),
                 contentPadding = PaddingValues(all = 10.dp),
                 content = {
-                    if (locations.itemCount == 0) {
-                        item {
-                            Box(
-                                modifier = Modifier.fillMaxSize(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = "No items found"
-                                )
-                            }
+                    items(locations.itemCount) { item ->
+                        locations[item]?.let { location ->
+                            val fieldText = mapOf(
+                                Pair("name", location.name),
+                                Pair("type", location.type),
+                                Pair("dimension", location.dimension),
+                            )
+                            LocationInfoBox(fieldText = fieldText,
+                                modifier = Modifier
+                                    .wrapContentWidth()
+                                    .wrapContentHeight()
+                                    .clickable {
+                                        navController.navigate(
+                                            "location_details_screen/${location.id}"
+                                        )
+                                    })
                         }
-                    } else {
-                        items(locations.itemCount) { item ->
-                            locations[item]?.let { location ->
-                                val fieldText = mapOf(
-                                    Pair("name", location.name),
-                                    Pair("type", location.type),
-                                    Pair("dimension", location.dimension),
-                                )
-                                LocationInfoBox(fieldText = fieldText,
-                                    modifier = Modifier
-                                        .wrapContentWidth()
-                                        .wrapContentHeight()
-                                        .clickable {
-                                            navController.navigate(
-                                                "location_details_screen/${location.id}"
-                                            )
-                                        })
-                            }
 
-                        }
-                        item {
-                            if (locations.loadState.append is LoadState.Loading) {
-                                CircularProgressIndicator()
-                            }
+                    }
+                    item {
+                        if (locations.loadState.append is LoadState.Loading) {
+                            CircularProgressIndicator()
                         }
                     }
+
                 })
 
 

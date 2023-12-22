@@ -1,5 +1,6 @@
 package com.project.rickandmorty.presentation.ui.location.search
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,6 +15,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -25,6 +27,7 @@ import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -50,9 +53,7 @@ fun LocationSearchScreen(
     val locations: List<Location>? = if (locationsState is Resource.Error) {
         produceState<List<LocationEntity>?>(initialValue = null) {
             viewModel.getLocationSearchDb(
-                name = name ?: "",
-                type = type ?: "",
-                dimension = dimension ?: ""
+                name = name ?: "", type = type ?: "", dimension = dimension ?: ""
             ).data?.collect {
                 value = it
             }
@@ -62,34 +63,48 @@ fun LocationSearchScreen(
     }
 
     Scaffold(topBar = {
-        CenterAlignedTopAppBar(
-            modifier = Modifier.padding(),
-            title = {},
-            navigationIcon = {
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Go Back",
-                    modifier = Modifier
-                        .size(24.dp, 24.dp)
-                        .clickable {
-                            navController.popBackStack()
-                        },
-                    tint = Color(0xFFBBAAEE)
-                )
-            },
-            colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                containerColor = Color.Transparent,
-                titleContentColor = MaterialTheme.colorScheme.primary,
+        CenterAlignedTopAppBar(modifier = Modifier.padding(), title = {}, navigationIcon = {
+            Icon(
+                imageVector = Icons.Default.ArrowBack,
+                contentDescription = "Go Back",
+                modifier = Modifier
+                    .size(24.dp, 24.dp)
+                    .clickable {
+                        navController.popBackStack()
+                    },
+                tint = Color(0xFFBBAAEE)
             )
+        }, colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+            containerColor = Color.Transparent,
+            titleContentColor = MaterialTheme.colorScheme.primary,
+        )
         )
     }, content = {
-        LazyVerticalGrid(columns = GridCells.Fixed(2),
-            verticalArrangement = Arrangement.spacedBy(space = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(space = 16.dp),
-            contentPadding = PaddingValues(all = 10.dp),
-            modifier = Modifier.padding(it),
-            content = {
-                if (locations != null) {
+        if (locations == null) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.White)
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+        } else if (locations.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.White)
+            ) {
+                Text(text = "No items found", textAlign = TextAlign.Center)
+            }
+        } else {
+            LazyVerticalGrid(columns = GridCells.Fixed(2),
+                verticalArrangement = Arrangement.spacedBy(space = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(space = 16.dp),
+                contentPadding = PaddingValues(all = 10.dp),
+                modifier = Modifier.padding(it),
+                content = {
                     items(locations.size) { item ->
                         locations[item].let { location ->
                             val fieldText = mapOf(
@@ -109,21 +124,10 @@ fun LocationSearchScreen(
                         }
 
                     }
-                } else {
-                    item {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "No items found"
-                            )
-                        }
-                    }
 
-                }
 
-            })
+                })
+        }
     })
 }
 

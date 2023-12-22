@@ -1,17 +1,19 @@
 package com.project.rickandmorty.presentation.ui.character.search
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -23,6 +25,7 @@ import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -43,17 +46,12 @@ fun CharacterSearchScreen(
     type: String?,
     navController: NavController
 ) {
-
     val viewModel = hiltViewModel<CharacterSearchViewModel>()
 
     val charactersState =
         produceState<Resource<List<Character>>>(initialValue = Resource.Loading()) {
             value = viewModel.getFilteredCharacters(
-                name = name,
-                gender = gender,
-                status = status,
-                species = species,
-                type = type
+                name = name, gender = gender, status = status, species = species, type = type
             )
         }.value
 
@@ -74,34 +72,48 @@ fun CharacterSearchScreen(
     }
 
     Scaffold(topBar = {
-        CenterAlignedTopAppBar(
-            modifier = Modifier,
-            title = {},
-            navigationIcon = {
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Go Back",
-                    modifier = Modifier
-                        .size(24.dp, 24.dp)
-                        .clickable {
-                            navController.popBackStack()
-                        },
-                    tint = Color(0xFFBBAAEE)
-                )
-            },
-            colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                containerColor = Color.Transparent,
-                titleContentColor = MaterialTheme.colorScheme.primary,
+        CenterAlignedTopAppBar(modifier = Modifier, title = {}, navigationIcon = {
+            Icon(
+                imageVector = Icons.Default.ArrowBack,
+                contentDescription = "Go Back",
+                modifier = Modifier
+                    .size(24.dp, 24.dp)
+                    .clickable {
+                        navController.popBackStack()
+                    },
+                tint = Color(0xFFBBAAEE)
             )
+        }, colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+            containerColor = Color.Transparent,
+            titleContentColor = MaterialTheme.colorScheme.primary,
+        )
         )
     }, content = {
-        LazyVerticalGrid(columns = GridCells.Fixed(2),
-            verticalArrangement = Arrangement.spacedBy(space = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(space = 16.dp),
-            contentPadding = PaddingValues(all = 10.dp),
-            modifier = Modifier.padding(it),
-            content = {
-                if (characters != null) {
+        if (characters == null) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.White)
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+        } else if (characters.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.White)
+            ) {
+                Text(text = "No items found", textAlign = TextAlign.Center)
+            }
+        } else {
+            LazyVerticalGrid(columns = GridCells.Fixed(2),
+                verticalArrangement = Arrangement.spacedBy(space = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(space = 16.dp),
+                contentPadding = PaddingValues(all = 10.dp),
+                modifier = Modifier.padding(it),
+                content = {
                     items(characters.size) { item ->
                         characters[item].let { character ->
                             val fieldText = mapOf(
@@ -112,30 +124,18 @@ fun CharacterSearchScreen(
                             )
                             CharacterInfoBox(image = character.image,
                                 fieldText = fieldText,
-                                modifier = Modifier
-                                    .clickable {
-                                        navController.navigate(
-                                            "character_details_screen/${character.id}"
-                                        )
-                                    })
+                                modifier = Modifier.clickable {
+                                    navController.navigate(
+                                        "character_details_screen/${character.id}"
+                                    )
+                                })
                         }
 
                     }
-                } else {
-                    item {
-                        Box(
-                            modifier = Modifier.wrapContentSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "No items found"
-                            )
-                        }
-                    }
 
-                }
 
-            })
+                })
+        }
     })
 }
 

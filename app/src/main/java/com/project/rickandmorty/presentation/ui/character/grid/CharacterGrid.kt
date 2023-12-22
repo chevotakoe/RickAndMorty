@@ -86,49 +86,44 @@ fun CharacterGrid(navController: NavController) {
                     modifier = Modifier.align(Alignment.Center)
                 )
             }
+        } else if (characters.itemCount == 0) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.White)
+            ) {
+                Text(text = "No items found", textAlign = TextAlign.Center)
+            }
         } else {
             LazyVerticalGrid(columns = GridCells.Fixed(2),
                 verticalArrangement = Arrangement.spacedBy(space = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(space = 16.dp),
                 contentPadding = PaddingValues(all = 10.dp),
                 content = {
-                    if (characters.itemCount == 0) {
-                        item {
-                            Box(
-                                modifier = Modifier.fillMaxSize(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = "No items found"
-                                )
-                            }
+                    items(characters.itemCount) { item ->
+                        characters[item]?.let { character ->
+                            val fieldText = mapOf(
+                                Pair("name", character.name),
+                                Pair("status", character.status),
+                                Pair("species", character.species),
+                                Pair("gender", character.gender)
+                            )
+                            CharacterInfoBox(image = character.image,
+                                fieldText = fieldText,
+                                modifier = Modifier.clickable {
+                                        navController.navigate(
+                                            "character_details_screen/${character.id}"
+                                        )
+                                    })
                         }
-                    } else {
-                        items(characters.itemCount) { item ->
-                            characters[item]?.let { character ->
-                                val fieldText = mapOf(
-                                    Pair("name", character.name),
-                                    Pair("status", character.status),
-                                    Pair("species", character.species),
-                                    Pair("gender", character.gender)
-                                )
-                                CharacterInfoBox(image = character.image,
-                                    fieldText = fieldText,
-                                    modifier = Modifier
-                                        .clickable {
-                                            navController.navigate(
-                                                "character_details_screen/${character.id}"
-                                            )
-                                        })
-                            }
 
-                        }
-                        item {
-                            if (characters.loadState.append is LoadState.Loading) {
-                                CircularProgressIndicator()
-                            }
+                    }
+                    item {
+                        if (characters.loadState.append is LoadState.Loading) {
+                            CircularProgressIndicator()
                         }
                     }
+
 
                 })
         }

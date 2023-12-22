@@ -41,6 +41,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -84,55 +85,44 @@ fun EpisodeGrid(navController: NavController) {
                     modifier = Modifier.align(Alignment.Center)
                 )
             }
-        } else {
-            if (episodes.itemCount == 0) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(
-                        text = "No items found"
-                    )
-                }
+        } else if (episodes.itemCount == 0) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.White)
+            ) {
+                Text(text = "No items found", textAlign = TextAlign.Center)
             }
+        } else {
             LazyVerticalGrid(columns = GridCells.Fixed(2),
                 verticalArrangement = Arrangement.spacedBy(space = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(space = 16.dp),
                 contentPadding = PaddingValues(all = 10.dp),
                 content = {
-                    if (episodes.itemCount == 0) {
-                        item {
-                            Box(
-                                modifier = Modifier.fillMaxSize(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = "No items found"
-                                )
-                            }
+                    items(episodes.itemCount) { item ->
+                        episodes[item]?.let { episode ->
+                            val fieldText = mapOf(
+                                Pair("name", episode.name),
+                                Pair("airDate", episode.airDate),
+                                Pair("episode", episode.episode),
+                            )
+                            EpisodeInfoBox(fieldText = fieldText,
+                                modifier = Modifier
+                                    .height(210.dp)
+                                    .clickable {
+                                        navController.navigate(
+                                            "episode_details_screen/${episode.id}"
+                                        )
+                                    })
                         }
-                    } else {
-                        items(episodes.itemCount) { item ->
-                            episodes[item]?.let { episode ->
-                                val fieldText = mapOf(
-                                    Pair("name", episode.name),
-                                    Pair("airDate", episode.airDate),
-                                    Pair("episode", episode.episode),
-                                )
-                                EpisodeInfoBox(fieldText = fieldText,
-                                    modifier = Modifier
-                                        .height(210.dp)
-                                        .clickable {
-                                            navController.navigate(
-                                                "episode_details_screen/${episode.id}"
-                                            )
-                                        })
-                            }
 
-                        }
-                        item {
-                            if (episodes.loadState.append is LoadState.Loading) {
-                                CircularProgressIndicator()
-                            }
+                    }
+                    item {
+                        if (episodes.loadState.append is LoadState.Loading) {
+                            CircularProgressIndicator()
                         }
                     }
+
                 })
         }
     }
